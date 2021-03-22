@@ -2,9 +2,10 @@ import cv2
 import numpy as np
 
 
-def __read_and_cut(frame, V1: (), V2: ()):
+def __cut_and_resize(frame, V1: (), V2: ()):
     cut_frame = frame[V1[0]:V2[0], V1[1]:V2[1]]
     grey_frame = cv2.cvtColor(cut_frame, cv2.COLOR_BGR2GRAY)
+
     return grey_frame
 
 
@@ -28,45 +29,48 @@ class MoveDetector:
 
         self.capture = capture
 
+
     def detect(self, treshold):
         if self.capture is None:
             raise ValueError("you have to load source first.")
 
-        # History, Threshold, DetectShadows 
-        fgbg = cv2.createBackgroundSubtractorMOG2(300, treshold, False)
+        detector = cv2.createBackgroundSubtractorMOG2(history=100, varThreshold=500)
 
         frameCount = 0
 
         while True:
-            # Return Value and the current frame
             ret, frame = self.capture.read()
-
-            #  Check if a current frame actually exist
             if not ret:
                 break
 
             frameCount += 1
             # Resize the frame
-            resizedFrame = cv2.resize(frame, (1500, 1000))
+            resizedFrame = cv2.resize(frame, (1000, 800))
+            roi = resizedFrame[300:800, 600:900]
 
             # Get the foreground mask
-            fgmask = fgbg.apply(resizedFrame)
+            fgmask = detector.apply(roi)
 
-            # Count all the non zero pixels within the mask
+            # removing shadows
+            # _, fgmask = cv2.threshold(fgmask, 254, 255, cv2.THRESH_BINARY)
+
+            contours, _ = cv2.findContours(fgmask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+            for cnt in contours:
+                area = cv2.contourArea(cnt)
+                if area > 100:
+                    x, y, w, h, = cv2.boundingRect(cnt)
+                    cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 3)
+
             count = np.count_nonzero(fgmask)
-
             print('Frame: %d, Pixel Count: %d' % (frameCount, count))
-
-            # Determine how many pixels do you want to detect to be considered "movement"
-            # if (frameCount > 1 and cou`nt > 5000):
             if (frameCount > 1 and count > treshold):
                 print('Movement')
                 cv2.putText(resizedFrame, 'Movement', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
             cv2.imshow('Frame', resizedFrame)
             cv2.imshow('Mask', fgmask)
-
-
+    
             k = cv2.waitKey(1) & 0xff
             if k == 27:
                 break
@@ -76,7 +80,7 @@ class MoveDetector:
 
 
 if __name__ == '__main__':
-    det = MoveDetector("sample.mp4")
+    det = MoveDetector("sample2.mp4")
     det.load_source()
     det.detect(500)
 
