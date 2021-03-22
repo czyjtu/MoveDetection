@@ -1,6 +1,13 @@
 import cv2
 import numpy as np
 
+
+def __read_and_cut(frame, V1: (), V2: ()):
+    cut_frame = frame[V1[0]:V2[0], V1[1]:V2[1]]
+    grey_frame = cv2.cvtColor(cut_frame, cv2.COLOR_BGR2GRAY)
+    return grey_frame
+
+
 class MoveDetector:
     """
 
@@ -20,7 +27,6 @@ class MoveDetector:
             raise ValueError("given source is invalid.")
 
         self.capture = capture
-
 
     def detect(self, treshold):
         if self.capture is None:
