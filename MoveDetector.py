@@ -65,7 +65,7 @@ class MoveDetector:
             if k == 27:
                 break
         
-        capture.release()
+        self.capture.release()
         cv2.destroyAllWindows()
     
         
@@ -132,6 +132,6 @@ class MoveDetector:
 
 
 if __name__ == '__main__':
-    det = MoveDetector("sample.mp4")
+    det = MoveDetector("cut.mp4")
     det.load_source()
     det.generate(show_bounding_box=True, ROI=((250, 500), (400, 800)))
