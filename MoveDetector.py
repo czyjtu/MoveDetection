@@ -2,15 +2,11 @@ import cv2
 import numpy as np
 
 
-def __cut_and_resize(frame, V1: (), V2: ()):
-    cut_frame = frame[V1[0]:V2[0], V1[1]:V2[1]]
-    grey_frame = cv2.cvtColor(cut_frame, cv2.COLOR_BGR2GRAY)
 
-    return grey_frame
 
 # TODO: type checking
 class MoveDetector:
-    def __init__(self, source):
+    def __init__(self, source, max_output: () = (800, 800)):
         self.src = source
         self.capture = None
         self.ROI = None
@@ -18,7 +14,20 @@ class MoveDetector:
         self.movement_threshold = None
         self.kernel_blurr_size = None
         self.show_bounding_box = None
+        self.__FRAME_MAX_SIZE: () = max_output
   
+
+    def fit_into_gui(self, frame_size: ()):
+        frame_proportions: float = frame_size[0] / frame_size[1]
+        gui_proportions: float = self.__FRAME_MAX_SIZE[0]/self.__FRAME_MAX_SIZE[1]
+        if frame_proportions > gui_proportions:
+            frame_size[0] = self.__FRAME_MAX_SIZE[0]
+            frame_size[1] = self.__FRAME_MAX_SIZE[0] // frame_proportions
+        else:
+            frame_size[1] = self.__FRAME_MAX_SIZE[1]
+            frame_size[0] = int(self.__FRAME_MAX_SIZE[1] * frame_proportions)
+        return frame_size
+
 
     def load_source(self, source = None):
         if not(source is None):
@@ -112,6 +121,13 @@ class MoveDetector:
                 cv2.putText(resized_frame, 'Movement', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
             yield resized_frame, grey_roi, mask, blurred_mask, final_mask
+
+    @staticmethod
+    def __cut_and_resize(frame, roi: ((float, float), (float, float)), size: (int, int)):
+        resized_frame = cv2.resize(frame, size)
+        cut_frame = resized_frame[roi[0][0] * size[0]:roi[1][0] * size[0], roi[0][1] * size[1]:roi[1][1] * size[1]]
+        grey_frame = cv2.cvtColor(cut_frame, cv2.COLOR_BGR2GRAY)
+        return resized_frame, cut_frame, grey_frame
 
 
 
