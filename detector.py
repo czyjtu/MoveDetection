@@ -16,6 +16,8 @@ class MoveDetector:
         self.show_bounding_box = None
         self.max_window_size = None
         self.frame_size = None  # output frame size
+        self.is_gui_open = None
+        self.is_debug = None
 
     # resize the frame to fit into gui window but keep original proportions
     def set_frame_size(self, frame_size):
@@ -44,6 +46,8 @@ class MoveDetector:
         self.kernel_blurr_size = config.kernel_blurr_size
         self.show_bounding_box = config.show_bounding_box
         self.max_window_size = config.max_window_size
+        self.is_gui_open = config.is_window_open
+        self.is_debug = config.debug
 
     def generate(self):
         self.update_parameters()
@@ -52,7 +56,9 @@ class MoveDetector:
 
         fps = self.capture.get(cv2.CAP_PROP_FPS)
 
-        time_stamp = time.time()
+        time_stamp: float = time.time()
+
+        heap_debug: bool = False
 
         for resized_frame, grey_roi, mask, blurred_mask, final_mask in self.__detect():
             if self.controller.need_update():
@@ -60,8 +66,19 @@ class MoveDetector:
 
             self.controller.update_frame(resized_frame)
 
-            if not self.controller.get_config().is_window_open:
+            if not self.is_gui_open:
                 break
+
+            if self.is_debug:
+                cv2.imshow("debug_grey", grey_roi)
+                cv2.imshow("debug_mask", mask)
+                cv2.imshow("debug_blurred_mask", blurred_mask)
+                cv2.imshow("debug_final_mask", final_mask)
+                heap_debug = True
+            elif heap_debug:
+                cv2.destroyAllWindows()
+                heap_debug = False
+
             cv2.waitKey(1)
             time.sleep(max((1 / fps) - (time.time() - time_stamp), 0))
             time_stamp = time.time()
