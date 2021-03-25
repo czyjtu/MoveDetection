@@ -62,8 +62,8 @@ class MoveDetector:
 
             if not self.controller.get_config().is_window_open:
                 break
-
-            cv2.waitKey(int(max((100 / fps) - (time.time() - time_stamp), 0)))
+            cv2.waitKey(1)
+            time.sleep(max((1 / fps) - (time.time() - time_stamp), 0))
             time_stamp = time.time()
 
         self.capture.release()
@@ -81,8 +81,8 @@ class MoveDetector:
 
         resized_frame = cv2.resize(frame, self.frame_size)
         cut_frame = resized_frame[
-                    int(self.roi[0][0] * self.frame_size[0]): int(self.roi[0][1] * self.frame_size[0]),
-                    int(self.roi[1][0] * self.frame_size[1]): int(self.roi[1][1] * self.frame_size[1])
+                    int(self.roi[0][1] * self.frame_size[1]): int(self.roi[1][1] * self.frame_size[1]),
+                    int(self.roi[0][0] * self.frame_size[0]): int(self.roi[1][0] * self.frame_size[0])
                     ]
         # cut_frame = cv2.resize(resized_frame, (800, 600))
         grey_frame = cv2.cvtColor(cut_frame, cv2.COLOR_BGR2GRAY)

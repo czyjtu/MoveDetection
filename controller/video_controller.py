@@ -33,9 +33,7 @@ class VideoController:
 
     def set_coordinates(self, x1, y1, x2, y2):
         max_w, max_h = self.parent.get_size()
-        print(max_w, max_h)
         self.config.roi = ((x1/max_w, y1/max_h), (x2/max_w, y2/max_h))
-        print((x1/max_w, y1/max_h), (x2/max_w, y2/max_h))
         self.config.is_up_to_date = False
 
     def is_window_open(self):
