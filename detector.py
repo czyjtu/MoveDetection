@@ -3,9 +3,10 @@ import numpy as np
 from configuration import Configuration
 import time
 
+
 # TODO: type checking
 class MoveDetector:
-    def __init__(self, controler = None):
+    def __init__(self, controler=None):
         self.controler = controler
         self.capture = None
         self.roi = None
@@ -14,30 +15,30 @@ class MoveDetector:
         self.kernel_blurr_size = None
         self.show_bounding_box = None
         self.max_window_size = None
-        self.frame_size = None # output frame size
-  
+        self.frame_size = None  # output frame size
 
     # resize the frame to fit into gui window but keep original proportions
-    def set_frame_size(self, frame_size):
+    def set_frame_size(self, frame_size: (float, float)):
+        if self.max_window_size is None:
+            raise ReferenceError("max window size not defined")
         frame_proportions: float = frame_size[0] / frame_size[1]
-        gui_proportions: float = self.max_window_size[0]/self.max_window_size[1]
+        gui_proportions: float = self.max_window_size[0] / self.max_window_size[1]
         if frame_proportions > gui_proportions:
             w = int(self.max_window_size[0])
             h = int(self.max_window_size[0] // frame_proportions)
         else:
             w = int(self.max_window_size[1])
             h = int(self.max_window_size[1] * frame_proportions)
-        
-        self.frame_size = (w, h)
 
+        self.frame_size = (w, h)
 
     def update_parameters(self):
         # config = self.controler.get_config()
         capture = cv2.VideoCapture("sample2.mp4")
         if capture is None or not capture.isOpened():
             raise ValueError("given source is invalid.")
-        config = Configuration(capture = capture)
-        
+        config = Configuration(capture=capture)
+
         self.capture = capture
         self.roi = config.roi
         self.area_threshold = config.area_threshold
@@ -46,13 +47,17 @@ class MoveDetector:
         self.show_bounding_box = config.show_bounding_box
         self.max_window_size = config.max_window_size
 
-
     def generate(self):
         self.update_parameters()
         if self.capture is None:
             raise ValueError("you have to load source first.")
 
         # TODO: create constant framerate; preferably the video framerate
+
+        fps = self.capture.get(cv2.CAP_PROP_FPS)
+
+        time_stamp = time.time()
+
         for resized_frame, grey_roi, mask, blurred_mask, final_mask in self.__detect():
             # if self.controller.need_update():
             #     self.update_parameters()
@@ -64,10 +69,11 @@ class MoveDetector:
             cv2.imshow("final", final_mask)
             print("running")
 
-            k = cv2.waitKey(1) & 0xff
+            k = cv2.waitKey((1000 / fps) - (time.time() - time_stamp)) & 0xff
+            time_stamp = time.time()
             if k == 27:
                 break
-        
+
         self.capture.release()
         cv2.destroyAllWindows()
 
@@ -75,22 +81,21 @@ class MoveDetector:
         ret, frame = self.capture.read()
         if frame is None:
             return None
-        
+
         if self.frame_size is None:
-            width  = self.capture.get(3)   # float `width`
+            width = self.capture.get(3)  # float `width`
             height = self.capture.get(4)  # float `height`
             self.set_frame_size((width, height))
-        
+
         resized_frame = cv2.resize(frame, self.frame_size)
         cut_frame = resized_frame[
-            int(self.roi[0][0] * self.frame_size[0]): int(self.roi[0][1] * self.frame_size[0]), 
-            int(self.roi[1][0] * self.frame_size[1]): int(self.roi[1][1] * self.frame_size[1])
-        ]
+                    int(self.roi[0][0] * self.frame_size[0]): int(self.roi[0][1] * self.frame_size[0]),
+                    int(self.roi[1][0] * self.frame_size[1]): int(self.roi[1][1] * self.frame_size[1])
+                    ]
         # cut_frame = cv2.resize(resized_frame, (800, 600))
         grey_frame = cv2.cvtColor(cut_frame, cv2.COLOR_BGR2GRAY)
         return resized_frame, cut_frame, grey_frame
-    
-        
+
     def __detect(self):
         if self.capture is None:
             raise ValueError("you have to load source first.")
@@ -107,11 +112,12 @@ class MoveDetector:
 
             frameCount += 1
 
-            mask = detector.apply(grey_roi) 
+            mask = detector.apply(grey_roi)
             # denoising 
-            blurred_mask = cv2.GaussianBlur(mask, self.kernel_blurr_size, 0) #simple denoising using Gaussian Blurring
+            blurred_mask = cv2.GaussianBlur(mask, self.kernel_blurr_size, 0)  # simple denoising using Gaussian Blurring
             # blurred_mask = cv2.fastNlMeansDenoising(mask, h=30) # lepsze ale mega wolne
-            _, final_mask = cv2.threshold(blurred_mask,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU) # setting the best treshold automatically
+            _, final_mask = cv2.threshold(blurred_mask, 0, 255,
+                                          cv2.THRESH_BINARY + cv2.THRESH_OTSU)  # setting the best treshold automatically
             # _, final_mask = cv2.threshold(blurred_mask, 200, 255, cv2.THRESH_BINARY) # manual tresholding
 
             # bounding boxes
@@ -123,17 +129,17 @@ class MoveDetector:
                     if self.show_bounding_box:
                         x, y, w, h, = cv2.boundingRect(cnt)
                         cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 3)
-                    else :
-                        cv2.drawContours(resized_frame, cnt, -1, (0,255,0), 3)
+                    else:
+                        cv2.drawContours(resized_frame, cnt, -1, (0, 255, 0), 3)
 
-            count = np.count_nonzero(final_mask,)
+            count = np.count_nonzero(final_mask, )
 
             if (frameCount > 1 and count > self.movement_threshold):
                 print('Movement')
-                cv2.putText(resized_frame, 'Movement', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                cv2.putText(resized_frame, 'Movement', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2,
+                            cv2.LINE_AA)
 
             yield resized_frame, grey_roi, mask, blurred_mask, final_mask
-
 
 
 if __name__ == '__main__':
