@@ -18,7 +18,7 @@ class Configuration:
             area_threshold: int = 1000,
             movement_threshold: int = 500,
             kernel_blurr_size: Tuple[int, int] = (11, 11),
-            show_bounding_box: bool = True,
+            show_bounding_box: bool = False,
             max_window_size: Tuple[int, int] = (800, 800),
             roi: Tuple[Tuple[float, float], Tuple[float, float]] = ((0., 0.), (1., 1.)),
             debug: bool = False

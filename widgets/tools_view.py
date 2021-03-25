@@ -7,6 +7,9 @@ from controller.tools_controller import ToolsController
 from widgets.buttons_widget import ButtonsWidget
 from widgets.coords_widget import CoordinatesWidget
 from widgets.debug_widget import DebugWidget
+from widgets.slider_blurr_widget import SliderBlurrWidget
+from widgets.slider_cached_area_widget import SliderCachedAreaWidget
+from widgets.slider_movement_widget import SliderMovementWidget
 from widgets.slider_widget import SliderWidget
 
 
@@ -34,12 +37,21 @@ class ToolsWidget:
         self.buttons = ButtonsWidget(self.widget, self.controller)
         self.tools_layout.addWidget(self.buttons.get_buttons_widget())
 
-        self.slider = SliderWidget(self.widget, self.controller)
-        self.tools_layout.addWidget(self.slider.get_slider_widget())
+#        self.slider = SliderWidget(self.widget, self.controller)
+#        self.tools_layout.addWidget(self.slider.get_slider_widget())
 
-        self.coordinates = CoordinatesWidget(self.widget, self.controller)
-        self.tools_layout.addWidget(self.coordinates.get_coordinates_widget())
-        self.tools_layout.addWidget(self.coordinates.get_coordinates_button())
+        self.slider_cached_area = SliderCachedAreaWidget(self.widget, self.controller)
+        self.tools_layout.addWidget(self.slider_cached_area.get_slider_widget())
+
+        self.slider_movement = SliderMovementWidget(self.widget, self.controller)
+        self.tools_layout.addWidget(self.slider_movement.get_slider_widget())
+
+        self.slider_blurr = SliderBlurrWidget(self.widget, self.controller)
+        self.tools_layout.addWidget(self.slider_blurr.get_slider_widget())
+
+#        self.coordinates = CoordinatesWidget(self.widget, self.controller)
+#        self.tools_layout.addWidget(self.coordinates.get_coordinates_widget())
+#        self.tools_layout.addWidget(self.coordinates.get_coordinates_button())
 
         self.debug = DebugWidget(self.widget, self.controller)
         self.parent.enabled = False

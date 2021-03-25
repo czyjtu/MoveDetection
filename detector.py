@@ -66,7 +66,7 @@ class MoveDetector:
 
             self.controller.update_frame(resized_frame)
 
-            if not self.is_gui_open:
+            if not self.controller.is_window_open():
                 break
 
             if self.is_debug:

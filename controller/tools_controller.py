@@ -54,7 +54,13 @@ class ToolsController:
         self.parent.start()
 
     def slider_changed_value(self):
-        self.config.movement_threshold = self.tools.slider.get_value()
+        self.config.movement_threshold = self.tools.slider_movement.get_value() * 100
+
+        self.config.area_threshold = self.tools.slider_cached_area.get_value() * 100
+
+        blurr = 2 * (self.tools.slider_blurr.get_value() // 5) + 1
+        self.config.kernel_blurr_size = (blurr, blurr)
+
         self.config.is_up_to_date = False
 
     def get_coordinates(self):
