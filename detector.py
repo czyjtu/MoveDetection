@@ -50,7 +50,9 @@ class MoveDetector:
         if self.capture is None:
             raise ValueError("you have to load source first.")
 
-        # TODO: create constant framerate; preferably the video framerate
+        fps = self.capture.get(cv2.CAP_PROP_FPS)
+
+        time_stamp = time.time()
 
         for resized_frame, grey_roi, mask, blurred_mask, final_mask in self.__detect():
             if self.controller.need_update():
@@ -58,16 +60,11 @@ class MoveDetector:
 
             self.controller.update_frame(resized_frame)
 
-            # cv2.imshow('Frame', resized_frame)
-            # cv2.imshow("grey_frame", grey_roi)
-            # cv2.imshow('Mask', mask)
-            # cv2.imshow("blurred_mask", blurred_mask)
-            # cv2.imshow("final", final_mask)
-            # print("running")
-
-            k = cv2.waitKey(1) & 0xff
-            if k == 27:
+            if not self.controller.get_config().is_window_open:
                 break
+
+            cv2.waitKey(int(max((100 / fps) - (time.time() - time_stamp), 0)))
+            time_stamp = time.time()
 
         self.capture.release()
         cv2.destroyAllWindows()
