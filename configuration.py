@@ -34,3 +34,5 @@ class Configuration:
         self.debug = debug
 
         self.is_up_to_date = False
+        self.is_window_open = True
+

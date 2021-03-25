@@ -38,3 +38,5 @@ class VideoController:
         print((x1/max_w, y1/max_h), (x2/max_w, y2/max_h))
         self.config.is_up_to_date = False
 
+    def is_window_open(self):
+        return self.config.is_window_open

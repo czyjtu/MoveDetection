@@ -40,3 +40,8 @@ class GUIWindow(QMainWindow):
 
     def start(self):
         self.detector.generate()
+
+    def closeEvent(self, event):
+        self.config.is_window_open = False
+        event.accept()
+
