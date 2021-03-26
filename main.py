@@ -1,5 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QMainWindow
+
+from PyQt5.QtWidgets import QApplication
 
 from gui import GUIWindow
 

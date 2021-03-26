@@ -1,4 +1,5 @@
-from typing import Tuple # pip install typing
+from typing import Tuple  # pip install typing
+
 
 class Configuration:
     """
@@ -10,17 +11,21 @@ class Configuration:
     param max_window_size: maximum dimensions in pixels for the VideoCapture
     param roi: area of interest, described in realtive unit
     """
-    def __init__(
-        self,
-        capture = None,
-        area_threshold: int = 100,
-        movement_threshold: int = 500,
-        kernel_blurr_size: Tuple[int, int] = (5, 5),
-        show_bounding_box: bool = True,
-        max_window_size: Tuple[int, int] = (800, 800), 
-        roi: Tuple[Tuple[float, float], Tuple[float, float]] = ((0., 1.), (0., 1.)),
-        debug: bool = False
 
+    def __init__(
+            self,
+            capture=None,
+            area_threshold: int = 1000,
+            movement_threshold: int = 500,
+            kernel_blurr_size: Tuple[int, int] = (3, 3),
+            show_bounding_box: bool = True,
+            max_window_size: Tuple[int, int] = (800, 800),
+            roi: Tuple[Tuple[float, float], Tuple[float, float]] = ((0., 0.), (1., 1.)),
+            debug: bool = False,
+            dilated_kernel_size: int = 0,
+            pixel_threshold: int = 200,
+            eps: float = 0.8,
+            history_size: float = 50
     ):
         self.capture = capture
         self.area_threshold = area_threshold
@@ -30,6 +35,11 @@ class Configuration:
         self.max_window_size = max_window_size
         self.roi = roi
         self.debug = debug
+        self.dilated_kernel_size = dilated_kernel_size
+        self.pixel_threshold = pixel_threshold
+        self.eps = eps
+        self.history_size = history_size
 
         self.is_up_to_date = False
-        
+        self.is_window_open = True
+

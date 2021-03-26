@@ -54,7 +54,7 @@ class CoordinatesWidget:
 
         self.toolbox_button = QPushButton("Choose Parameters")
         self.toolbox_button.setStyleSheet("background:#3f3f3f; color:#d1d1d1; text-transform:uppercase;")
-        self.toolbox_button.clicked.connect(lambda: self.controller.get_parameters())
+        self.toolbox_button.clicked.connect(lambda: self.controller.get_coordinates())
 
     def get_coordinates_widget(self):
         return self.toolbox_widget
