@@ -21,8 +21,11 @@ class Configuration:
             show_bounding_box: bool = False,
             max_window_size: Tuple[int, int] = (800, 800),
             roi: Tuple[Tuple[float, float], Tuple[float, float]] = ((0., 0.), (1., 1.)),
-            debug: bool = False
-
+            debug: bool = False,
+            dilated_kernel_size: int = 5,
+            pixel_threshold: int = 200,
+            eps: float = 0.8,
+            history_size: float = 5
     ):
         self.capture = capture
         self.area_threshold = area_threshold
@@ -32,6 +35,10 @@ class Configuration:
         self.max_window_size = max_window_size
         self.roi = roi
         self.debug = debug
+        self.dilated_kernel_size = dilated_kernel_size
+        self.pixel_threshold = pixel_threshold
+        self.eps = eps
+        self.history_size = history_size
 
         self.is_up_to_date = False
         self.is_window_open = True

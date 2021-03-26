@@ -16,7 +16,7 @@ class SliderBlurrWidget:
         self.slider_layout.setAlignment(Qt.AlignTop)
 
         self.slider_name = QLabel()
-        self.slider_name.setText("set blurr value")
+        self.slider_name.setText("blurr value")
         self.slider_name.setStyleSheet("font-size:18px; color:#c5c5c5; text-transform:uppercase;")
         self.slider_name.setGeometry(0, 0, 375, 20)
 
