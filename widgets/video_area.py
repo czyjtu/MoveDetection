@@ -8,6 +8,7 @@ class VideoArea(QLabel):
         QLabel.__init__(self, parent)
         self.selection = QRubberBand(QRubberBand.Rectangle, self)
         self.main = main
+        self.setAlignment(Qt.AlignCenter)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:

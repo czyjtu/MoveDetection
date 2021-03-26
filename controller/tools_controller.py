@@ -70,22 +70,8 @@ class ToolsController:
 
         self.config.history_size = self.tools.slider_history.get_value()
 
-
         self.config.is_up_to_date = False
 
-    def get_coordinates(self):
-        coords = self.tools.coordinates.get_coordinates()
-        if all([x.isnumeric() for x in coords]):
-            coords = [int(x) for x in coords]
-            max_coords = (self.parent.frameGeometry().width(), self.parent.frameGeometry().height())
-
-            if all([x >= 0 for x in coords]) \
-                    and coords[0] + coords[2] < max_coords[0] and coords[1] + coords[3] < max_coords[1]:
-                self.config.roi = ((float(coords[0]) / max_coords[0], float(coords[1]) / max_coords[1]),
-                                   (float(coords[2]) / max_coords[0], float(coords[3]) / max_coords[1]))
-                self.config.is_up_to_date = False
-                return
-        QMessageBox.information(self.parent, "Error", "Invalid coordinates.")
 
     def enable_debug(self):
         self.config.debug = self.tools.debug.is_enabled()

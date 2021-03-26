@@ -9,9 +9,6 @@ from widgets.main_view import MainAreaWidget
 from widgets.tools_view import ToolsWidget
 
 
-# TODO gui/input: górna granica coordinates, resize okna ogarnać
-
-
 class GUIWindow(QMainWindow):
     def __init__(self):
         super(GUIWindow, self).__init__()
@@ -35,8 +32,9 @@ class GUIWindow(QMainWindow):
 
         self.show()
 
-    def get_size(self):
-        return self.frameGeometry().width(), self.frameGeometry().height()
+    def get_video_size(self):
+        return self.main_area.widget.frameGeometry().width(),\
+               self.main_area.widget.frameGeometry().height()
 
     def start(self):
         self.detector.generate()

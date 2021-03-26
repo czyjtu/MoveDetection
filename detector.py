@@ -91,7 +91,7 @@ class MoveDetector:
                 cv2.destroyAllWindows()
                 heap_debug = False
 
-            cv2.waitKey(1)
+            cv2.waitKey(10)
             # time.sleep(max((1 / fps) - (time.time() - time_stamp), 0))
             time_stamp = time.time()
 

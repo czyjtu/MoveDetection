@@ -22,8 +22,8 @@ class VideoController:
         bytesPerLine = ch * w
         converted = QImage(frame.data, w, h, bytesPerLine, QImage.Format_BGR888)
 
-        self.label.resize(*self.parent.get_size())
-        image = converted.scaled(*self.parent.get_size(), Qt.KeepAspectRatio)
+        self.label.resize(*self.parent.get_video_size())
+        image = converted.scaled(*self.parent.get_video_size(), Qt.KeepAspectRatio)
 
         self.label.setPixmap(QPixmap(image))
         self.config.is_up_to_date = True
@@ -32,7 +32,7 @@ class VideoController:
         return self.config
 
     def set_coordinates(self, x1, y1, x2, y2):
-        max_w, max_h = self.parent.get_size()
+        max_w, max_h = self.parent.get_video_size()
         self.config.roi = ((x1/max_w, y1/max_h), (x2/max_w, y2/max_h))
         self.config.is_up_to_date = False
 
