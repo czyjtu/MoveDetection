@@ -54,7 +54,11 @@ class MoveDetector:
         self.dilated_kernel_size = config.dilated_kernel_size
         self.pixel_threshold = config.pixel_threshold
         self.eps = config.eps
-        self.history_size = config.history_size
+        if config.history_size != self.history_size:
+            self.history_size = config.history_size
+            self.detector = cv2.createBackgroundSubtractorKNN(detectShadows=False, history = self.history_size)
+
+
 
     def generate(self):
         self.update_parameters()
@@ -67,7 +71,7 @@ class MoveDetector:
 
         heap_debug: bool = False
 
-        for  resized_frame, grey_roi, mask, blurred_roi, blurred_mask, dilated, final_mask in self.__detect():
+        for  resized_frame, grey_roi, mask, blurred_mask, dilated, final_mask in self.__detect():
             if self.controller.need_update():
                 self.update_parameters()
 
@@ -77,12 +81,11 @@ class MoveDetector:
                 break
 
             if self.is_debug:
-                cv2.imshow("1. grey roi", grey_roi)
-                cv2.imshow("2. blurred roi", blurred_roi)
-                cv2.imshow("3. mask", mask)
-                cv2.imshow("4. blurred mask", blurred_mask)
-                cv2.imshow("5. dilated mask", dilated)
-                cv2.imshow("6. thresholded mask", final_mask)
+                cv2.imshow("grey roi", grey_roi)
+                cv2.imshow("mask", mask)
+                cv2.imshow("1.blurred mask", blurred_mask)
+                cv2.imshow("2.dilated mask", dilated)
+                cv2.imshow("3.thresholded mask", final_mask)
                 heap_debug = True
             elif heap_debug:
                 cv2.destroyAllWindows()
@@ -117,7 +120,7 @@ class MoveDetector:
         if self.capture is None:
             raise ValueError("you have to load source first.")
 
-        detector = cv2.createBackgroundSubtractorKNN(detectShadows=False, history = self.history_size)
+        self.detector = cv2.createBackgroundSubtractorKNN(detectShadows=False, history = self.history_size)
         frameCount = 0
 
         while True:
@@ -129,14 +132,17 @@ class MoveDetector:
 
             frameCount += 1
 
-            blurred_roi = cv2.medianBlur(grey_roi, self.kernel_blurr_size[0])
+            blurred_roi = grey_roi #cv2.medianBlur(grey_roi, self.kernel_blurr_size[0])
             
-            mask = detector.apply(blurred_roi)
+            mask = self.detector.apply(blurred_roi)
 
             blurred_mask = cv2.GaussianBlur(mask, self.kernel_blurr_size, 0)
 
-            kernal = np.ones((self.dilated_kernel_size, 3), np.uint8)
-            dilated = cv2.dilate(blurred_mask, kernal, iterations= 2)
+            if self.dilated_kernel_size != 0:
+                kernal = np.ones((self.dilated_kernel_size, 3), np.uint8)
+                dilated = cv2.dilate(blurred_mask, kernal, iterations= 2)
+            else:
+                dilated = blurred_mask
 
             _, final_mask = cv2.threshold(dilated, self.pixel_threshold, 255, cv2.THRESH_BINARY)  
          
@@ -145,20 +151,20 @@ class MoveDetector:
             rects = [cv2.boundingRect(cnt) for cnt in 2*contours if cv2.contourArea(cnt) > self.area_threshold]
 
             if self.show_bounding_box:
-                merge_rects, weights = cv2.groupRectangles(rects, 1, eps=1) 
+                merge_rects, weights = cv2.groupRectangles(rects, 1, eps=self.eps) 
                 for x, y, w, h in merge_rects:
-                    cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 3)
+                    cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 count = np.count_nonzero(final_mask, )
             else:
                 for x, y, w, h in rects:
-                    cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 3)
+                    cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
             count = np.count_nonzero(final_mask, )
             if (frameCount > 1 and count > self.movement_threshold):
                 cv2.putText(resized_frame, 'Movement', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2,
                             cv2.LINE_AA)
 
-            yield  resized_frame, grey_roi, mask, blurred_roi, blurred_mask, dilated, final_mask
+            yield  resized_frame, grey_roi, mask, blurred_mask, dilated, final_mask
 
 # if __name__ == '__main__':
 #     det = MoveDetector()

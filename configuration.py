@@ -17,15 +17,15 @@ class Configuration:
             capture=None,
             area_threshold: int = 1000,
             movement_threshold: int = 500,
-            kernel_blurr_size: Tuple[int, int] = (11, 11),
-            show_bounding_box: bool = False,
+            kernel_blurr_size: Tuple[int, int] = (3, 3),
+            show_bounding_box: bool = True,
             max_window_size: Tuple[int, int] = (800, 800),
             roi: Tuple[Tuple[float, float], Tuple[float, float]] = ((0., 0.), (1., 1.)),
             debug: bool = False,
-            dilated_kernel_size: int = 5,
+            dilated_kernel_size: int = 0,
             pixel_threshold: int = 200,
             eps: float = 0.8,
-            history_size: float = 5
+            history_size: float = 50
     ):
         self.capture = capture
         self.area_threshold = area_threshold

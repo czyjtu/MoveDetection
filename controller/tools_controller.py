@@ -55,12 +55,21 @@ class ToolsController:
         self.parent.start()
 
     def slider_changed_value(self):
-        self.config.movement_threshold = self.tools.slider_movement.get_value() * 100
+        self.config.movement_threshold = self.tools.slider_movement.get_value()
 
-        self.config.area_threshold = self.tools.slider_cached_area.get_value() * 100
+        self.config.area_threshold = self.tools.slider_area.get_value() 
 
-        blurr = 2 * (self.tools.slider_blurr.get_value() // 5) + 1
+        blurr = 2 * self.tools.slider_blurr.get_value() + 1 # needs to be odd
         self.config.kernel_blurr_size = (blurr, blurr)
+
+        self.config.dilated_kernel_size = self.tools.slider_dilate.get_value() 
+
+        self.config.eps = float(self.tools.slider_epsilon.get_value() / 100)
+
+        self.config.pixel_threshold = self.tools.slider_threshold.get_value() 
+
+        self.config.history_size = self.tools.slider_history.get_value()
+
 
         self.config.is_up_to_date = False
 
