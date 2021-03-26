@@ -1,20 +1,23 @@
 # Move Detector
 ## Description:
-Project is build in Python using OpenCv technology.
 The aim of this project is to detect movement in video clips and streams, 
 including youtube and webcams.
-The app provides information about movement
-in the form of red inscription in left up corner and green square in movement area.
-### Quick about the detector:
-In first stage the image (one of the frame in video) is turned into grey scale.
-![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/debug_grey.png?raw=true)
-Then we use the BackgroundSubtractor (from Open Cv) to see the differences between previous frames.
-It's just subtract pixels value from two frames.
-![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/debug_mask.png?raw=true)
-In final stage we filter image from a buzz (using Open cv's bluer threshold).
-![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/debug_final.png?raw=true)
+The app inform user about movement through the inscription in the upper left corner, 
+and green square around the moving area.
+### Shortly about the detector:
+In first stage the image (one of the frame in video) is trimmed to the area of interes specified by the user, and turned into grayscale.
+![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/grey_roi.png?raw=true)
+Then we use the BackgroundSubtractor (from Open Cv) to compare current frame with background calculated based on the previous frames (history size specified by the user).
+![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/mask.png?raw=true)
+After that, Gaussian blurr and dilation is applied to smooth the noise and magnify the moving object.
+![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/blurred_mask.png?raw=true)
+![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/dilate_mask.png?raw=true)
+In final stage we use threshold to cut out the noise and distinct wanted object.
+![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/threshold_mask.png?raw=true)
 Final decision whether movement is detected
 depends on how much of area in the picture is being considered as moving.
+Thre final result.
+![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/main_window.png?raw=true)
 ## Features:
 ## Video from local file
 ![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/file.png?raw=true)
