@@ -27,7 +27,7 @@ In final stage we use threshold to cut out the noise and distinct wanted object.
 Final decision whether movement is detected
 depends on how much of area in the picture is being considered as moving.
 
-Thre final result.
+### Thre final result.
 
 ![alt text](https://github.com/czyjtu/MoveDetection/blob/main/photos/main_window.jpg?raw=true)
 
