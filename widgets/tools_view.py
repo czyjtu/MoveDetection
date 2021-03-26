@@ -70,8 +70,4 @@ class ToolsWidget:
         self.tools_layout.addWidget(self.debug.get_debug_widget())
 
     def get_tools_area(self):
-<<<<<<< HEAD
-        return self.widget
-=======
         return self.dock
->>>>>>> master
