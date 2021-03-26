@@ -12,23 +12,24 @@ class ToolsController:
     def open_file_name_dialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name = QFileDialog.getOpenFileName(self.parent, 'Open File', "", "Video files (*.mp4)")
+        file_name, check = QFileDialog.getOpenFileName(self.parent, 'Open File', "", "Video files (*.mp4)")
 
         if file_name:
-            self.config.capture = cv2.VideoCapture(file_name[0])
+            self.config.capture = cv2.VideoCapture(file_name)
             self.config.is_up_to_date = False
             self.parent.start()
 
     def get_address(self):
         url = self.tools.address.get_address_text()
-        self.config.capture = cv2.VideoCapture(url)
+        if url:
+            self.config.capture = cv2.VideoCapture(url)
 
-        if self.config.capture is None or not self.config.capture.isOpened():
-            QMessageBox.information(self.parent, "Error", "Cannot open url {}.".format(url))
-            return
-
-        self.config.is_up_to_date = False
-        self.parent.start()
+            if self.config.capture and self.config.capture.isOpened():
+                self.config.is_up_to_date = False
+                self.parent.start()
+                return
+        self.config.capture = None
+        QMessageBox.information(self.parent, "Error", "Cannot open url {}.".format(url))
 
     def get_yt_address(self):
         url = self.tools.address.get_address_text()
